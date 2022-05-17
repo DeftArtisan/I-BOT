@@ -1,3 +1,4 @@
+//import java.awt.Dimension;
 import java.awt.AWTException;
 import java.awt.Desktop.Action;
 import java.awt.MouseInfo;
@@ -125,13 +126,13 @@ public class Automative implements Serializable{
 	
 	protected static abstract class Utils{
 		public enum Validative{
-			_PATH_("https://www.instagram.com/"),
-			_EMAIL_("bakereb683@eosbuzz.com"), //bakereb683@eosbuzz.com
-			_USER_("fi.tnessgrinder"),
-			_PASS_("fCWrz4Y3LCzix9pA"),//fCWrz4Y3LCzix9pA
-			_TARGET_("fitnessslap, gains.land"), 
-			_DEL_PATH_("C:\\Users\\Rumen\\Downloads"),
-			_CLONE_POSTS_("");
+			_PATH_(""),
+			_EMAIL_(""),//login credentials 
+			_USER_(""),
+			_PASS_(""),
+			_TARGETS_(""), //accounts to be cloned
+			_DEL_PATH_(""),//dynamic deletion of locally downloaded content
+			_CLONE_POSTS_("");//posts per account respectively for each one specified(if null, all)
 			
 			String deficint;
 			
