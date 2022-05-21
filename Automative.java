@@ -317,17 +317,18 @@ public class Automative implements Serializable{
 		
 		private static Consumer<WebDriver> mainImplementative(){
 			return entry -> {
+			//if multiple targets have been specified
 			     if(Utils.Validative._TARGET_.getValidative().contains(","))
-			    	 //since the initial target has been accessed immediately, a redirection is deemed superfluous hence its removal
-			    	 //the condition is static(redo)
-			    	 while(!Stream.of(Utils.Validative._TARGET_.getValidative().split(",")).collect(Collectors.toCollection(ArrayDeque::new)).removeFirst().isEmpty()) {    
+				     
+				ArrayDeque<String> storage = Stream.of(Utils.Validative._TARGET_.getValidative().split(",")).collect(Collectors.toCollection(ArrayDeque::new));
+			    	 
+				while(!storage.removeFirst().isEmpty()) {    
 			    		 //sending keys
 			    		 new WebDriverWait(entry, Duration.ofSeconds(10)).ignoreAll(List.of(TimeoutException.class, NoSuchElementException.class))
 			    		      .until(new Function<>() {
 			    		    	  @Override public Object apply(WebDriver t) {
 			    		    	    _DRIVER_.findElement(By.xpath("//*[@id=\"react-root\"]/div/div/section/nav/div[2]/div/div/div[2]/input")).sendKeys(Validative._TARGET_.getValidative().split(",")[0]);
 			    		  			_DRIVER_.findElement(By.xpath("//*[@id=\"react-root\"]/div/div/section/nav/div[2]/div/div/div[2]/div[3]/div/div[2]/div/div[1]/a")).click();
-								    //add secondary wait if necessary
 			    		  			return true;
 			    		    	 }
 			    		 });
