@@ -2,11 +2,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.sound.sampled.AudioInputStream;
@@ -18,8 +21,11 @@ import javax.swing.text.JTextComponent;
 
  
 @SuppressWarnings("serial")
-public class AutomativeVisualized extends JFrame {
+
+
+public class AutomativeVisualized extends JFrame implements Serializable{
  
+	private static final long serialVersionUID = 4252748354398549966L;
    JTextField tField, FormattedField, ClonePublication;
    JPasswordField pwField;
    JTextArea tArea;
@@ -27,8 +33,9 @@ public class AutomativeVisualized extends JFrame {
    public AutomativeVisualized() {
       JPanel tfPanel = new JPanel(new GridLayout(5, 2, 10, 2));
       tfPanel.setBorder(BorderFactory.createTitledBorder("Credentials "));
- 
-      tfPanel.add(new JLabel(" Enter an email/username"));
+
+      tfPanel.add(new JLabel(" Enter an ema"
+      		+ "il/username"));
       tField = new JTextField(10);
       tfPanel.add(tField);
       
@@ -42,9 +49,11 @@ public class AutomativeVisualized extends JFrame {
       FormattedField.addKeyListener(new KeyAdapter() {
     	  @Override public void keyPressed(KeyEvent e) {
     		  if(e.getKeyCode() == KeyEvent.VK_SPACE)
-    			  JOptionPane.showConfirmDialog(tfPanel, "If you intend to clone multiple accounts, please separate them by a comma.");
+    			  if(!FormattedField.getText().isBlank() && !(FormattedField.getText().toCharArray()[FormattedField.getText().length() - 1] == ','))
+    				  //FormattedField.getText().replace(" ", "");
+    				  JOptionPane.showConfirmDialog(tfPanel, "If you intend to clone multiple accounts, please separate them by a comma.");  	
     	  }
-      });
+       });
       
       
       //restrict to numerics
@@ -53,8 +62,14 @@ public class AutomativeVisualized extends JFrame {
       tfPanel.add(ClonePublication);
       ClonePublication.addKeyListener(new KeyAdapter() {
     	  @Override public void keyPressed(KeyEvent e) {
-    		  if(e.getKeyCode() == KeyEvent.VK_SPACE)
+    		  if(!(ClonePublication.getText().toCharArray()[ClonePublication.toString().length() - 1] == ',') && e.getKeyCode() == KeyEvent.VK_SPACE)
     			  JOptionPane.showConfirmDialog(tfPanel, "If you intend to specify custom post count(from each account set for publication) please separate them by a comma.");
+    	  }
+    	  
+    	  @Override public void keyReleased(KeyEvent e) {
+    		  if(e.getKeyCode() == KeyEvent.VK_SPACE && !(ClonePublication.getText().toString().toCharArray()[ClonePublication.toString().length() - 1] == ',')) {
+    			  puts("active");
+    		  }
     	  }
       });
       new ArrayList<JTextComponent>(
@@ -84,7 +99,7 @@ public class AutomativeVisualized extends JFrame {
  
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       setTitle("Automative-Cloning");
-      setSize(500, 200);
+      setSize(600, 250);
       setIconImage(Toolkit.getDefaultToolkit().getImage("Automation\\src\\red.png"));
       setLocationRelativeTo(null);//centering
       setResizable(false);
@@ -110,28 +125,36 @@ public class AutomativeVisualized extends JFrame {
    }
 
    
-   private static void puts(final String defici) { System.out.println(defici);}
+   @SuppressWarnings("unused")
+private static void puts(final String defici) { System.out.println(defici);}
    
    private static <T_IN extends JTextComponent> Consumer<T_IN> synchonization(){
 	   return  entry -> {
 		    entry.addKeyListener(new KeyAdapter() {
 		    	StringBuilder appender = new StringBuilder();
 				@Override public void keyPressed(KeyEvent e) {
-					if(Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar())) {
+					if(Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar()) || e.getKeyChar() == ',') {
+//						if(e.getKeyCode() == 32 && !(((JTextComponent)entry).getText()
+//									.toCharArray()[((JTextComponent)entry).getText().lastIndexOf(' ') - 2] == ' ')) {
+//							
+//						}
 						appender.append(e.getKeyChar());
+						
+						//((JTextComponent)entry).setText(String.valueOf(e.getKeyChar()));
 					}
+					if(activity().test(e, appender))
+						 appender.deleteCharAt(appender.length() - 1);
 				}
 				@Override public void keyReleased(KeyEvent e) {
-					if(e.getKeyCode() == 8)
-							if(appender.length() > 0)
-							 appender.deleteCharAt(appender.length() - 1 );
+					if(activity().test(e, appender))
+							 appender.deleteCharAt(appender.length() - 1);
 					
 					if(entry instanceof JPasswordField)
 						if(((JPasswordField)entry).getPassword().length == 0) {
 							appender.delete(0, appender.length());
 							Automative.Utils.Validative._PASS_.setter("");
 						} else {
-							Automative.Utils.Validative._PASS_.setter(appender.toString());
+							Automative.Utils.Validative._PASS_.setter(appender.toString().strip());
 							System.out.println(Automative.Utils.Validative._PASS_.getValidative());
 						}
 					else
@@ -139,10 +162,12 @@ public class AutomativeVisualized extends JFrame {
 							appender.delete(0, appender.length());
 							Automative.Utils.Validative._EMAIL_.setter("");
 						} else {
-							Automative.Utils.Validative._EMAIL_.setter(appender.toString());
+							Automative.Utils.Validative._EMAIL_.setter(appender.toString().strip());
 							System.out.println(Automative.Utils.Validative._EMAIL_.getValidative());
 						}
+					((JTextComponent)entry).setText(appender.toString());
 				}
+				
 		    });  
 	   };
    }
@@ -152,6 +177,7 @@ public class AutomativeVisualized extends JFrame {
 		BUTTON();
 	}
 	
+	private static BiPredicate<? super KeyEvent, StringBuilder> activity() { return (entry, entry2)-> { return entry.getKeyCode() == 8 && !(entry2.isEmpty()); }; }
 	
 	private static <T_R extends JPanel> Automative.Utils.Consumeristic<File, AudioInputStream> background(T_R win){
 		return (entry, entry2) -> {
