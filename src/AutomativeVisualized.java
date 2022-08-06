@@ -65,12 +65,6 @@ public class AutomativeVisualized extends JFrame implements Serializable{
     		  if(!(ClonePublication.getText().toCharArray()[ClonePublication.toString().length() - 1] == ',') && e.getKeyCode() == KeyEvent.VK_SPACE)
     			  JOptionPane.showConfirmDialog(tfPanel, "If you intend to specify custom post count(from each account set for publication) please separate them by a comma.");
     	  }
-    	  
-    	  @Override public void keyReleased(KeyEvent e) {
-    		  if(e.getKeyCode() == KeyEvent.VK_SPACE && !(ClonePublication.getText().toString().toCharArray()[ClonePublication.toString().length() - 1] == ',')) {
-    			  puts("active");
-    		  }
-    	  }
       });
       new ArrayList<JTextComponent>(
          Arrays.asList(tField, FormattedField, pwField, ClonePublication) 		  
@@ -142,8 +136,6 @@ private static void puts(final String defici) { System.out.println(defici);}
 						
 						//((JTextComponent)entry).setText(String.valueOf(e.getKeyChar()));
 					}
-					if(activity().test(e, appender))
-						 appender.deleteCharAt(appender.length() - 1);
 				}
 				@Override public void keyReleased(KeyEvent e) {
 					if(activity().test(e, appender))
